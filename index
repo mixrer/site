@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J+N</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            --accent: #e94560;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            color: #eaeaea;
+            overflow-x: hidden;
+        }
+
+        .header {
+            text-align: center;
+            padding: 3rem 2rem 2rem;
+        }
+
+        .header h1 {
+            font-size: 5rem;
+            font-weight: 300;
+            letter-spacing: 0.5rem;
+            background: linear-gradient(45deg, #e94560, #ff6b6b, #feca57);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: glow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 20px rgba(233, 69, 96, 0.4)); }
+            to { filter: drop-shadow(0 0 40px rgba(233, 69, 96, 0.8)); }
+        }
+
+        /* Photo Slider */
+        .slider-container {
+            position: relative;
+            width: 90%;
+            max-width: 800px;
+            height: 400px;
+            margin: 2rem auto;
+            background: var(--glass-bg);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .photos-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .photo {
+            position: absolute;
+            width: 45%;
+            height: 80%;
+            object-fit: cover;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            transition: all 0.1s ease-out;
+        }
+
+        .photo-left {
+            left: 5%;
+        }
+
+        .photo-right {
+            right: 5%;
+        }
+
+        .slider-control {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            z-index: 20;
+        }
+
+        .slider-input {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        .slider-input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #e94560, #ff6b6b);
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(233, 69, 96, 0.6);
+            border: 2px solid white;
+        }
+
+        .merge-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 3rem;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(233, 69, 96, 0.8);
+            pointer-events: none;
+            z-index: 30;
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            text-align: center;
+        }
+
+        .merge-message.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        /* Hearts Animation */
+        .hearts-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            overflow: hidden;
+            display: none;
+        }
+
+        .hearts-container.active {
+            display: block;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 2rem;
+            animation: float-up 4s ease-in forwards;
+            opacity: 0;
+        }
+
+        @keyframes float-up {
+            0% {
+                opacity: 1;
+                transform: translateY(100vh) scale(0) rotate(0deg);
+            }
+            10% {
+                opacity: 1;
+                transform: translateY(90vh) scale(1.2) rotate(10deg);
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-10vh) scale(0.5) rotate(360deg);
+            }
+        }
+
+        /* Countdown Section */
+        .countdown-section {
+            text-align: center;
+            padding: 4rem 2rem;
+            margin: 3rem auto;
+            max-width: 900px;
+        }
+
+        .countdown-label {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            margin-bottom: 2rem;
+            letter-spacing: 0.3rem;
+            text-transform: uppercase;
+        }
+
+        .countdown-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .countdown-box {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .countdown-value {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #e94560, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+
+        .countdown-unit {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1rem;
+        }
+
+        .countdown-date {
+            margin-top: 2rem;
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        /* Bulletin Board Section */
+        .bulletin-section {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto 4rem;
+        }
+
+        .bulletin-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .bulletin-header h2 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+        }
+
+        .bulletin-header p {
+            opacity: 0.7;
+            font-size: 1.1rem;
+        }
+
+        .note-input-container {
+            background: var(--glass-bg);
+            padding: 2rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .note-input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .note-input:focus {
+            border-color: #e94560;
+            box-shadow: 0 0 20px rgba(233, 69, 96, 0.2);
+        }
+
+        .note-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .add-note-btn {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #e94560, #ff6b6b);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(233, 69, 96, 0.4);
+            white-space: nowrap;
+        }
+
+        .add-note-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(233, 69, 96, 0.6);
+        }
+
+        .bulletin-board {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 2rem;
+            min-height: 300px;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 20px;
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .post-it {
+            padding: 1.5rem;
+            border-radius: 5px;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+            transform: rotate(var(--rotation));
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            animation: stick 0.5s ease-out;
+        }
+
+        @keyframes stick {
+            0% {
+                transform: scale(0) rotate(var(--rotation));
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1) rotate(var(--rotation));
+                opacity: 1;
+            }
+        }
+
+        .post-it:hover {
+            transform: rotate(0deg) scale(1.05);
+            z-index: 10;
+            box-shadow: 8px 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .post-it-content {
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            line-height: 1.4;
+            color: #333;
+            word-wrap: break-word;
+        }
+
+        .post-it-date {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-top: 1rem;
+            color: #555;
+            font-weight: bold;
+        }
+
+        .post-it-pin {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle at 30% 30%, #ff6b6b, #c92a2a);
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .empty-state {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.3;
+            text-align: center;
+            pointer-events: none;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 3rem;
+            }
+            
+            .countdown-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+            
+            .countdown-value {
+                font-size: 2.5rem;
+            }
+            
+            .bulletin-board {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="hearts-container" id="heartsContainer"></div>
+
+    <header class="header">
+        <h1>J + N</h1>
+    </header>
+
+    <!-- Photo Slider -->
+    <div class="slider-container">
+        <div class="photos-wrapper">
+            <img src="nate.jpg" alt="Jess" class="photo photo-left" id="photoLeft">
+            <img src="jess.jpg" alt="Nate" class="photo photo-right" id="photoRight">
+            <div class="merge-message" id="mergeMessage">❤️<br>Perfect<br>Match</div>
+        </div>
+        <div class="slider-control">
+            <input type="range" min="0" max="100" value="0" class="slider-input" id="photoSlider">
+        </div>
+    </div>
+
+    <!-- Countdown Section -->
+    <section class="countdown-section">
+        <div class="countdown-label">Seeing Each Other In</div>
+        <div class="countdown-grid">
+            <div class="countdown-box">
+                <div class="countdown-value" id="days">00</div>
+                <div class="countdown-unit">Days</div>
+            </div>
+            <div class="countdown-box">
+                <div class="countdown-value" id="hours">00</div>
+                <div class="countdown-unit">Hours</div>
+            </div>
+            <div class="countdown-box">
+                <div class="countdown-value" id="minutes">00</div>
+                <div class="countdown-unit">Minutes</div>
+            </div>
+            <div class="countdown-box">
+                <div class="countdown-value" id="seconds">00</div>
+                <div class="countdown-unit">Seconds</div>
+            </div>
+        </div>
+        <div class="countdown-date">Until April 17, 2026</div>
+    </section>
+
+    <!-- Bulletin Board -->
+    <section class="bulletin-section">
+        <div class="bulletin-header">
+            <h2>💌 The Butt Board</h2>
+            <p>Leave me a note, I am pretty sure it will last forever</p>
+        </div>
+        
+        <div class="note-input-container">
+            <input type="text" class="note-input" id="noteInput" placeholder="List Your Top 1,000 movies . . ." maxlength="100">
+            <button class="add-note-btn" onclick="addNote()">Add Note 💕</button>
+        </div>
+
+        <div class="bulletin-board" id="bulletinBoard">
+            <div class="empty-state" id="emptyState">
+                <p>No notes yet... Be the first! ✨</p>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Target date: April 17, 2026
+        const TARGET_DATE = new Date('2026-04-17T00:00:00');
+        
+        const postItColors = [
+            '#ffd93d', '#6bcf7f', '#4d96ff', '#ff6b6b', '#c9b1ff', 
+            '#95e1d3', '#f38181', '#aa96da', '#fcbad3', '#ffffd2'
+        ];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initSlider();
+            initCountdown();
+            loadNotes();
+        });
+
+        // Photo Slider with Hearts
+        function initSlider() {
+            const slider = document.getElementById('photoSlider');
+            const photoLeft = document.getElementById('photoLeft');
+            const photoRight = document.getElementById('photoRight');
+            const mergeMessage = document.getElementById('mergeMessage');
+            
+            let heartsTriggered = false;
+
+            slider.addEventListener('input', (e) => {
+                const value = e.target.value;
+                const maxMove = 45;
+                
+                const leftPos = 5 + (value / 100) * maxMove;
+                const rightPos = 5 + (value / 100) * maxMove;
+                
+                photoLeft.style.left = `${leftPos}%`;
+                photoRight.style.right = `${rightPos}%`;
+                
+                if (value >= 50 && !heartsTriggered) {
+                    heartsTriggered = true;
+                    triggerHearts();
+                    mergeMessage.classList.add('show');
+                    
+                    setTimeout(() => {
+                        slider.value = 0;
+                        photoLeft.style.left = '5%';
+                        photoRight.style.right = '5%';
+                        mergeMessage.classList.remove('show');
+                        heartsTriggered = false;
+                    }, 3000);
+                }
+            });
+        }
+
+        function triggerHearts() {
+            const container = document.getElementById('heartsContainer');
+            container.classList.add('active');
+            container.innerHTML = '';
+            const heartColors = ['❤️', '💖', '💕', '💗', '💓', '💝', '💘', '💞'];
+            
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'heart';
+                    heart.innerHTML = heartColors[Math.floor(Math.random() * heartColors.length)];
+                    heart.style.left = Math.random() * 100 + '%';
+                    heart.style.animationDuration = (3 + Math.random() * 2) + 's';
+                    heart.style.fontSize = (1 + Math.random() * 2) + 'rem';
+                    heart.style.color = `hsl(${Math.random() * 60 + 330}, 100%, 70%)`;
+                    container.appendChild(heart);
+                    
+                    setTimeout(() => {
+                        heart.remove();
+                    }, 5000);
+                }, i * 50);
+            }
+            
+            setTimeout(() => {
+                container.classList.remove('active');
+            }, 5000);
+        }
+
+        // Countdown Timer (Days, Hours, Minutes, Seconds)
+        function initCountdown() {
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        }
+
+        function updateCountdown() {
+            const now = new Date();
+            const diff = TARGET_DATE - now;
+            
+            if (diff <= 0) {
+                document.getElementById('days').textContent = '00';
+                document.getElementById('hours').textContent = '00';
+                document.getElementById('minutes').textContent = '00';
+                document.getElementById('seconds').textContent = '00';
+                return;
+            }
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            document.getElementById('days').textContent = pad(days);
+            document.getElementById('hours').textContent = pad(hours);
+            document.getElementById('minutes').textContent = pad(minutes);
+            document.getElementById('seconds').textContent = pad(seconds);
+        }
+
+        function pad(num) {
+            return num < 10 ? '0' + num : num;
+        }
+
+        // Bulletin Board Functions
+        function addNote() {
+            const input = document.getElementById('noteInput');
+            const text = input.value.trim();
+            
+            if (!text) return;
+            
+            const note = {
+                id: Date.now(),
+                text: text,
+                date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                color: postItColors[Math.floor(Math.random() * postItColors.length)],
+                rotation: (Math.random() - 0.5) * 10
+            };
+            
+            saveNote(note);
+            renderNote(note);
+            input.value = '';
+        }
+
+        function saveNote(note) {
+            let notes = JSON.parse(localStorage.getItem('jn_notes') || '[]');
+            notes.push(note);
+            localStorage.setItem('jn_notes', JSON.stringify(notes));
+        }
+
+        function loadNotes() {
+            const notes = JSON.parse(localStorage.getItem('jn_notes') || '[]');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (notes.length > 0) {
+                emptyState.style.display = 'none';
+                notes.forEach(note => renderNote(note));
+            }
+        }
+
+        function renderNote(note) {
+            const board = document.getElementById('bulletinBoard');
+            const emptyState = document.getElementById('emptyState');
+            
+            emptyState.style.display = 'none';
+            
+            const noteEl = document.createElement('div');
+            noteEl.className = 'post-it';
+            noteEl.style.backgroundColor = note.color;
+            noteEl.style.setProperty('--rotation', note.rotation + 'deg');
+            noteEl.innerHTML = `
+                <div class="post-it-pin"></div>
+                <div class="post-it-content">${escapeHtml(note.text)}</div>
+                <div class="post-it-date">${note.date}</div>
+            `;
+            
+            noteEl.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                if (confirm('Delete this note?')) {
+                    deleteNote(note.id);
+                    noteEl.remove();
+                    checkEmpty();
+                }
+            });
+            
+            board.insertBefore(noteEl, board.firstChild.nextSibling || board.firstChild);
+        }
+
+        function deleteNote(id) {
+            let notes = JSON.parse(localStorage.getItem('jn_notes') || '[]');
+            notes = notes.filter(n => n.id !== id);
+            localStorage.setItem('jn_notes', JSON.stringify(notes));
+        }
+
+        function checkEmpty() {
+            const notes = document.querySelectorAll('.post-it');
+            const emptyState = document.getElementById('emptyState');
+            if (notes.length === 0) {
+                emptyState.style.display = 'block';
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        document.getElementById('noteInput')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addNote();
+        });
+    </script>
+</body>
+</html>
